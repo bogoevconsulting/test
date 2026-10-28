@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Эфир · Из аренды в своё</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f6f4;--card:#fff;--ink:#1d2a2c;--muted:#5d6b6d;--teal:#2f5d62;--gold:#e8b75a;--brick:#9a3b2e;--line:#dfe8e5}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:Manrope,system-ui,sans-serif;min-height:100vh}
+.wrap{max-width:1320px;margin:0 auto;padding:20px 16px 40px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.brand{display:flex;align-items:center;gap:12px}
+.live{display:inline-flex;align-items:center;gap:8px;background:var(--brick);color:#fff;font-weight:800;font-size:13px;letter-spacing:2px;padding:7px 12px;border-radius:20px}
+.live i{width:8px;height:8px;border-radius:50%;background:#fff;animation:p 1.4s infinite}
+@keyframes p{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.live i{animation:none}}
+h1{font-family:Unbounded,system-ui,sans-serif;font-weight:800;font-size:clamp(20px,2.6vw,30px);line-height:1.15}
+h1 span{color:var(--teal)}
+.sub{color:var(--muted);font-weight:700;font-size:15px}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:16px;align-items:start}
+.player{background:#000;border-radius:20px;overflow:hidden;aspect-ratio:16/9;box-shadow:0 20px 50px rgba(47,93,98,.18)}
+.player iframe{width:100%;height:100%;border:0;display:block}
+.chat{background:var(--card);border-radius:20px;overflow:hidden;height:100%;min-height:420px;display:flex;flex-direction:column;box-shadow:0 20px 50px rgba(47,93,98,.12)}
+.chat h2{font-size:14px;letter-spacing:2px;font-weight:800;color:var(--teal);padding:14px 16px;border-bottom:1px solid var(--line)}
+.chat iframe{flex:1;width:100%;border:0;min-height:380px}
+.below{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}
+.btn{display:inline-flex;align-items:center;gap:8px;font-weight:800;font-size:16px;padding:14px 20px;border-radius:14px;text-decoration:none;border:2px solid transparent}
+.btn.zoom{background:var(--card);color:var(--ink);border-color:var(--line)}
+.btn.chatlink{background:var(--card);color:var(--teal);border-color:var(--line);display:none}
+.btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.offer{display:none;margin-top:16px;background:var(--teal);color:#fff;border-radius:20px;padding:20px 22px;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.offer.on{display:flex}
+.offer b{font-family:Unbounded,system-ui,sans-serif;font-size:20px}
+.offer .btn{background:var(--gold);color:var(--ink)}
+.note{margin-top:16px;color:var(--muted);font-size:14px;line-height:1.5}
+@media (max-width:900px){
+ .grid{grid-template-columns:1fr}
+ .chat{display:none}
+ .btn.chatlink{display:inline-flex}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <header>
+  <div>
+   <div class="brand"><span class="live"><i></i>ЭФИР</span><span class="sub">4 ноября · 19:00 по Норвегии</span></div>
+   <h1 style="margin-top:10px">Из аренды в своё : <span>как купить жильё в Норвегии</span></h1>
+  </div>
+ </header>
+
+ <div class="grid">
+  <div class="player"><iframe id="yt" title="Прямой эфир" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>
+  <div class="chat"><h2>ЧАТ ЭФИРА</h2><iframe id="chat" title="Чат эфира"></iframe></div>
+ </div>
+
+ <div class="below">
+  <a class="btn zoom" id="zoom" href="#" target="_blank" rel="noopener">🎥 Смотреть в Zoom</a>
+  <a class="btn chatlink" id="chatlink" href="#" target="_blank" rel="noopener">💬 Открыть чат</a>
+ </div>
+
+ <div class="offer" id="offer">
+  <div><b>Курс «Как купить своё жильё в Норвегии»</b><div style="margin-top:6px;opacity:.9">Цена для участников эфира - 72 часа</div></div>
+  <a class="btn" id="buy" href="#" target="_blank" rel="noopener">Записаться на курс</a>
+ </div>
+
+ <p class="note">Если видео не загружается, обновите страницу. Чтобы писать в чат, войдите в Google-аккаунт</p>
+</div>
+
+<script>
+// ===== НАСТРОЙКИ =====
+var VIDEO_ID = 'CUZXb8mOw7Q';   // ID трансляции YouTube (из ссылки youtube.com/live/XXXX)
+var ZOOM_URL = '';               // ссылка на Zoom (пусто = кнопка скрыта)
+var COURSE_URL = '';             // ссылка на оплату курса
+var SHOW_OFFER = false;          // true = показать блок курса
+// =====================
+
+// быстрая подмена без правки файла: ?v=НОВЫЙ_ID и ?offer=1
+var q = new URLSearchParams(location.search);
+if (q.get('v')) VIDEO_ID = q.get('v');
+if (q.get('offer') === '1') SHOW_OFFER = true;
+
+var host = location.hostname || 'localhost';
+document.getElementById('yt').src = 'https://www.youtube.com/embed/' + VIDEO_ID + '?autoplay=1&rel=0&modestbranding=1';
+document.getElementById('chat').src = 'https://www.youtube.com/live_chat?v=' + VIDEO_ID + '&embed_domain=' + host;
+document.getElementById('chatlink').href = 'https://www.youtube.com/live_chat?v=' + VIDEO_ID;
+
+var z = document.getElementById('zoom');
+if (ZOOM_URL) z.href = ZOOM_URL; else z.style.display = 'none';
+if (SHOW_OFFER && COURSE_URL) { document.getElementById('buy').href = COURSE_URL; document.getElementById('offer').classList.add('on'); }
+</script>
+</body>
+</html>
